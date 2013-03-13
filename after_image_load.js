@@ -3,9 +3,9 @@
 
   // Provides this syntax:
   //
-  //   $(img).afterImageLoad(someUrl, successCallback, optionalFailureCallback);
+  //   $(img).afterImageLoad(someUrl, successCallback, optionalFailureCallback, useCors);
   //
-  $.fn.afterImageLoad = function(newSrc, successCallback, failureCallback) {
+  $.fn.afterImageLoad = function(newSrc, successCallback, failureCallback, useCors) {
 
     var img = this,
         failureCallback = (failureCallback || function(){}),
@@ -30,15 +30,7 @@
       return img;
     }
 
-    // Other domains need crossOrigin.
-    //
-    if (
-      (
-        scannableSrc.indexOf('http') == 0 ||
-        scannableSrc.indexOf('//') == 0
-      ) &&
-      scannableSrc.indexOf(window.location.host) < 0
-    ) {
+    if (useCors) {
       img.attr('crossOrigin', 'Anonymous');
     }
 
@@ -68,19 +60,20 @@
 
   // Provides two additional syntaxes:
   //
-  //   $.afterImageLoad(imgEl, someUrl, successCallback, optionalFailureCallback);
-  //   $.afterImageLoad(someUrl, successCallback, optionalFailureCallback);
+  //   $.afterImageLoad(imgEl, someUrl, successCallback, optionalFailureCallback, useCors);
+  //   $.afterImageLoad(someUrl, successCallback, optionalFailureCallback, useCors);
   //
-  $.afterImageLoad = function(img, newSrc, successCallback, failureCallback) {
+  $.afterImageLoad = function(img, newSrc, successCallback, failureCallback, useCors) {
     if ($.type(img) == 'string') {
       var failureCallback = successCallback,
           successCallback = newSrc,
           newSrc = img,
+          useCors = failureCallback,
           img = $('<img />');
     } else {
       var img = $(img);
     }
-    img.afterImageLoad(newSrc, successCallback, failureCallback);
+    img.afterImageLoad(newSrc, successCallback, failureCallback, useCors);
   }
 
 }(jQuery));
